@@ -27,8 +27,8 @@ var _ = Describe("The Testing Framework", func() {
 		err = controlPlane.Start()
 		Expect(err).NotTo(HaveOccurred(), "Expected controlPlane to start successfully")
 
-		apiServerURL := controlPlane.APIURL()
-		etcdClientURL := controlPlane.APIServer.EtcdURL
+		apiServerURL := controlPlane.APIServer.URL
+		etcdClientURL := controlPlane.Etcd.URL
 
 		isEtcdListeningForClients := isSomethingListeningOnPort(etcdClientURL.Host)
 		isAPIServerListening := isSomethingListeningOnPort(apiServerURL.Host)
@@ -42,7 +42,8 @@ var _ = Describe("The Testing Framework", func() {
 			fmt.Sprintf("Expected APIServer to listen on %s", apiServerURL.Host))
 
 		By("getting a kubectl & run it against the control plane")
-		kubeCtl := controlPlane.KubeCtl()
+		kubeCtl, err := controlPlane.KubeCtl()
+		Expect(err).NotTo(HaveOccurred())
 		stdout, stderr, err := kubeCtl.Run("get", "pods")
 		Expect(err).NotTo(HaveOccurred())
 		bytes, err := ioutil.ReadAll(stdout)

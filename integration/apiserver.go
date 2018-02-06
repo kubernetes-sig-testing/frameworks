@@ -1,11 +1,13 @@
 package integration
 
 import (
+	"fmt"
 	"io"
 	"net/url"
 	"time"
 
 	"github.com/kubernetes-sig-testing/frameworks/integration/internal"
+	"k8s.io/client-go/rest"
 )
 
 // APIServer knows how to run a kubernetes apiserver.
@@ -104,4 +106,15 @@ func (s *APIServer) Start() error {
 // the CertDir if necessary.
 func (s *APIServer) Stop() error {
 	return s.processState.Stop()
+}
+
+// Config returns a rest.Config which holds all the details on how to connect
+// to this APIServer.
+func (s *APIServer) Config() (*rest.Config, error) {
+	if s.URL == nil {
+		return nil, fmt.Errorf("expected URL to be configured, did you call Start()?")
+	}
+	return &rest.Config{
+		Host: s.URL.String(),
+	}, nil
 }

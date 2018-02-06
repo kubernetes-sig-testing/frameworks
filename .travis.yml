@@ -7,6 +7,7 @@ go_import_path: github.com/kubernetes-sig-testing/frameworks
 
 before_install:
   - source ./bin/consider-early-travis-exit.sh
+  - go get -u github.com/tools/godep
   - go get -u github.com/golang/lint/golint
   - go get -u golang.org/x/tools/cmd/goimports
   - go get -u github.com/onsi/ginkgo/ginkgo
@@ -15,7 +16,17 @@ before_install:
 # The dependencies have already been vendored by `dep` so
 # we don't need to fetch them.
 install:
-  -
+  - ./bin/force-deps.sh
+
+env:
+  matrix:
+    - CLIENT_GO_VERSION=
+    - CLIENT_GO_VERSION=v2.0.0
+    - CLIENT_GO_VERSION=v3.0.0
+    - CLIENT_GO_VERSION=v4.0.0
+    - CLIENT_GO_VERSION=v5.0.0
+    - CLIENT_GO_VERSION=v5.0.1
+    - CLIENT_GO_VERSION=v6.0.0
 
 script:
   - ./bin/pre-commit.sh
