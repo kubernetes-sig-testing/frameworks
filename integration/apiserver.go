@@ -67,7 +67,7 @@ type APIServer struct {
 // Start starts the apiserver, waits for it to come up, and returns an error,
 // if occurred.
 func (s *APIServer) Start() error {
-	if s.EtcdURL == nil {
+	if len(s.Args) == 0 && s.EtcdURL == nil {
 		return fmt.Errorf("expected EtcdURL to be configured")
 	}
 
