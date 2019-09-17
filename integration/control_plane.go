@@ -3,6 +3,10 @@ package integration
 import (
 	"fmt"
 	"net/url"
+
+	"k8s.io/apimachinery/pkg/runtime/serializer"
+	"k8s.io/client-go/kubernetes/scheme"
+	"k8s.io/client-go/rest"
 )
 
 // ControlPlane is a struct that knows how to start your test control plane.
@@ -56,4 +60,20 @@ func (f *ControlPlane) KubeCtl() *KubeCtl {
 	k := &KubeCtl{}
 	k.Opts = append(k.Opts, fmt.Sprintf("--server=%s", f.APIURL()))
 	return k
+}
+
+// RESTClientConfig returns a pre-configured restconfig, ready to connect to
+// this ControlPlane.
+func (f *ControlPlane) RESTClientConfig() *rest.Config {
+	c := &rest.Config{
+		Host: f.APIURL().String(),
+		ContentConfig: rest.ContentConfig{
+			NegotiatedSerializer: serializer.DirectCodecFactory{CodecFactory: scheme.Codecs},
+		},
+	}
+	err := rest.SetKubernetesDefaults(c)
+	if err != nil {
+		panic(err)
+	}
+	return c
 }
