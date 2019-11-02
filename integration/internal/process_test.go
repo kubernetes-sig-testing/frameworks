@@ -216,6 +216,7 @@ var _ = Describe("Start method", func() {
 					echo 'this is stderr' >&2
 					echo 'that is stdout'
 					echo 'i started' >&2
+					sleep infinity
 				`,
 			}
 			processState.StartMessage = "i started"
