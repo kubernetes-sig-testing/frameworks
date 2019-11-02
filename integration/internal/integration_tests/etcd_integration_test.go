@@ -50,17 +50,12 @@ var _ = Describe("Etcd", func() {
 		stdout := &bytes.Buffer{}
 		stderr := &bytes.Buffer{}
 		etcd := &Etcd{
-			Args:         []string{"--help"},
+			Args:         []string{"--name", "xyzxyz"},
 			Out:          stdout,
 			Err:          stderr,
-			StartTimeout: 500 * time.Millisecond,
+			StartTimeout: 5 * time.Second,
 		}
-
-		// it will timeout, as we'll never see the "startup message" we are waiting
-		// for on StdErr
-		Expect(etcd.Start()).To(MatchError(ContainSubstring("timeout")))
-
-		Expect(stdout.String()).To(ContainSubstring("member flags"))
-		Expect(stderr.String()).To(ContainSubstring("usage: etcd"))
+		Expect(etcd.Start()).To(Succeed())
+		Expect(stderr.String()).To(ContainSubstring("Name:xyzxyz"))
 	})
 })
