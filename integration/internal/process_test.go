@@ -39,6 +39,16 @@ var _ = Describe("Start method", func() {
 		Consistently(processState.Session.ExitCode).Should(BeNumerically("==", -1))
 	})
 
+	It("handles process startup failures ", func() {
+		processState.StartTimeout = 10 * time.Second
+		processState.StartMessage = "unlikely-stderr-message"
+		processState.Args = []string{"-c", "exit 5"}
+
+		err := processState.Start(nil, nil)
+		Expect(err).To(MatchError("process bash exited before readiness with exit code 5"))
+		Expect(processState.Session.ExitCode()).To(BeNumerically("==", 5))
+	})
+
 	Context("when a health check endpoint is provided", func() {
 		var server *ghttp.Server
 		BeforeEach(func() {
