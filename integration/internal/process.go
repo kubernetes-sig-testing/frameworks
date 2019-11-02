@@ -140,6 +140,8 @@ func (ps *ProcessState) Start(stdout, stderr io.Writer) (err error) {
 	}
 
 	select {
+	case <-ps.Session.Exited:
+		return fmt.Errorf("process %s exited before readiness with exit code %d", path.Base(ps.Path), ps.Session.ExitCode())
 	case <-ready:
 		ps.ready = true
 		return nil
